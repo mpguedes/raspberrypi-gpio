@@ -1,9 +1,33 @@
 //GPIO
 var Gpio = require('onoff').Gpio,
-led = new Gpio(14, 'out');
+motor1 = new Gpio(11, 'out'),
+motor1Go = new Gpio(10, 'out'),
+motor1Back = new Gpio(9, 'out');
 
+motor2 = new Gpio(25, 'out'),
+motor2Go = new Gpio(24, 'out'),
+motor2Back = new Gpio(23, 'out');
 
+//var piblaster = require('pi-blaster.js');
 
+//var currentPulse = 0;
+//var up = true;
+//function update() {
+//setTimeout(function(){
+//if(up){
+   //if(currentPulse <= 1) currentPulse += .1;
+   //else up = false;
+////console.error('up ' + currentPulse);
+//} else {
+   //if(currentPulse >= 0) currentPulse -= .1;
+   //else up = true;
+ ////  console.error('down  ' + currentPulse);
+//}
+//piblaster.setPwm(17, currentPulse);
+//update();
+//},100);
+//}
+//update();
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -30,24 +54,48 @@ app.use('/', routes);
 app.use('/users', users);
 
 app.get('/go', function (req, res) {
-  led.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor1.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor1Go.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor1Back.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2Go.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2Back.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
   res.json({go: true});
 });
 
 app.get('/back', function (req, res) {
+  motor1.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor1Go.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor1Back.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2Go.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2Back.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
   res.json({back: true});
 });
 
 app.get('/left', function (req, res) {
+  motor1.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor1Go.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor1Back.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2Go.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2Back.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
   res.json({left: true});
 });
 
 app.get('/right', function (req, res) {
+  motor1.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor1Go.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor1Back.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2Go.write(1, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2Back.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
   res.json({right: true});
 });
 
 app.get('/stop', function (req, res) {
-  led.write(0);
+  motor1.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
+  motor2.write(0, function(e){if(e != null)console.error(JSON.stringify(e))});
   res.json({stop: true});
 });
 
@@ -83,5 +131,13 @@ app.use(function(err, req, res, next) {
   });
 });
 
+function exit() {
+  motor1.unexport();
+  motor1Go.unexport();
+  motor1Back.unexport();
+  process.exit();
+}
+
+process.on('SIGINT', exit);
 
 module.exports = app;
